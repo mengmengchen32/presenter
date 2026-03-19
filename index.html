@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Presenter</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #000;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* ── Stage ── */
+    #stage {
+      position: relative;
+      background: #000;
+    }
+
+    #deck-frame {
+      position: absolute;
+      top: 0; left: 0;
+      border: none;
+      transform-origin: top left;
+    }
+
+    /* ── Launch screen (shown when no deck loaded) ── */
+    #launch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      color: #fff;
+    }
+
+    #launch h1 {
+      font-size: 18px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.02em;
+    }
+
+    .deck-input-row {
+      display: flex;
+      gap: 10px;
+      width: 480px;
+    }
+
+    .deck-input-row input {
+      flex: 1;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .deck-input-row input::placeholder { color: rgba(255,255,255,0.3); }
+    .deck-input-row input:focus { border-color: rgba(255,255,255,0.4); }
+
+    .btn-load {
+      background: #2B5CFF;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .btn-load:hover { background: #1A4AE6; }
+
+    .quick-decks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      max-width: 520px;
+    }
+
+    .quick-deck {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .quick-deck:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    /* ── Control bar ── */
+    #controls {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 8px 12px;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+
+    #controls.hidden { opacity: 0; pointer-events: none; }
+
+    .ctrl-divider {
+      width: 1px;
+      height: 20px;
+      background: rgba(255,255,255,0.12);
+      margin: 0 4px;
+    }
+
+    .ctrl-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0 4px;
+    }
+
+    .ctrl-btn {
+      background: none;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      padding: 6px 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .ctrl-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .ctrl-btn.active {
+      background: rgba(43,92,255,0.2);
+      border-color: rgba(43,92,255,0.5);
+      color: #7fa3ff;
+    }
+
+    .ctrl-btn-icon {
+      background: none;
+      border: none;
+      padding: 6px 10px;
+      color: rgba(255,255,255,0.55);
+      cursor: pointer;
+      font-size: 15px;
+      line-height: 1;
+      border-radius: 7px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .ctrl-btn-icon:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+    /* fullscreen: hide controls after 2s idle */
+    :fullscreen #controls,
+    :-webkit-full-screen #controls { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<!-- Launch screen -->
+<div id="launch">
+  <h1>Presenter</h1>
+  <div class="deck-input-row">
+    <input type="text" id="deck-url" placeholder="decks/kroger.html" />
+    <button class="btn-load" onclick="loadDeck()">Load →</button>
+  </div>
+  <div class="quick-decks" id="quick-decks">
+    <!-- populated by JS -->
+  </div>
+</div>
+
+<!-- Stage (hidden until deck loads) -->
+<div id="stage" style="display:none;">
+  <iframe id="deck-frame" scrolling="no" allowfullscreen></iframe>
+</div>
+
+<!-- Control bar -->
+<div id="controls" class="hidden">
+  <span class="ctrl-label">Ratio</span>
+  <button class="ctrl-btn active" data-ratio="16:9" onclick="setRatio(this)">16:9</button>
+  <button class="ctrl-btn" data-ratio="4:3" onclick="setRatio(this)">4:3</button>
+  <button class="ctrl-btn" data-ratio="16:10" onclick="setRatio(this)">16:10</button>
+
+  <div class="ctrl-divider"></div>
+
+  <button class="ctrl-btn-icon" onclick="toggleFullscreen()" title="Fullscreen (F)">⛶</button>
+  <button class="ctrl-btn-icon" onclick="ejectDeck()" title="Back to launcher">✕</button>
+</div>
+
+<script>
+  // ── Known decks (add as you create them) ──
+  var DECKS = [
+    { label: 'Kroger', path: 'decks/kroger.html' },
+    { label: 'Canonical Design', path: 'assets.ariodata.com/canonical-design' },
+  ];
+
+  // ── Aspect ratios: [width, height] at native resolution ──
+  var RATIOS = {
+    '16:9':  [1920, 1080],
+    '4:3':   [1600, 1200],
+    '16:10': [1920, 1200],
+  };
+
+  var currentRatio = '16:9';
+
+  // ── Populate quick-deck buttons ──
+  var qd = document.getElementById('quick-decks');
+  DECKS.forEach(function(d) {
+    var btn = document.createElement('button');
+    btn.className = 'quick-deck';
+    btn.textContent = d.label;
+    btn.onclick = function() {
+      document.getElementById('deck-url').value = d.path;
+      loadDeck();
+    };
+    qd.appendChild(btn);
+  });
+
+  // ── Check ?deck= query param on load ──
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var deck = params.get('deck');
+    var ratio = params.get('ratio');
+    if (ratio && RATIOS[ratio]) currentRatio = ratio;
+    if (deck) {
+      document.getElementById('deck-url').value = deck;
+      loadDeck();
+    }
+  })();
+
+  function loadDeck() {
+    var url = document.getElementById('deck-url').value.trim();
+    if (!url) return;
+    // Prepend https:// if it looks like a hostname without protocol
+    if (url.match(/^[a-zA-Z0-9]/) && !url.startsWith('http') && !url.startsWith('/') && !url.startsWith('.')) {
+      if (url.includes('.') && !url.includes('/')) url = 'https://' + url;
+    }
+    var frame = document.getElementById('deck-frame');
+    frame.src = url;
+    document.getElementById('launch').style.display = 'none';
+    document.getElementById('stage').style.display = 'block';
+    document.getElementById('controls').classList.remove('hidden');
+    scale();
+  }
+
+  function ejectDeck() {
+    if (document.fullscreenElement) document.exitFullscreen();
+    document.getElementById('deck-frame').src = '';
+    document.getElementById('stage').style.display = 'none';
+    document.getElementById('launch').style.display = 'flex';
+    document.getElementById('controls').classList.add('hidden');
+  }
+
+  // ── Scaling ──
+  function scale() {
+    var dims = RATIOS[currentRatio];
+    var nativeW = dims[0], nativeH = dims[1];
+    var vw = window.innerWidth, vh = window.innerHeight;
+
+    // Fit inside viewport, letterbox/pillarbox with black bars
+    var scaleX = vw / nativeW;
+    var scaleY = vh / nativeH;
+    var s = Math.min(scaleX, scaleY);
+
+    var stageW = Math.round(nativeW * s);
+    var stageH = Math.round(nativeH * s);
+
+    var stage = document.getElementById('stage');
+    stage.style.width  = stageW + 'px';
+    stage.style.height = stageH + 'px';
+
+    var frame = document.getElementById('deck-frame');
+    frame.style.width  = nativeW + 'px';
+    frame.style.height = nativeH + 'px';
+    frame.style.transform = 'scale(' + s + ')';
+  }
+
+  function setRatio(btn) {
+    document.querySelectorAll('.ctrl-btn[data-ratio]').forEach(function(b) {
+      b.classList.remove('active');
+    });
+    btn.classList.add('active');
+    currentRatio = btn.dataset.ratio;
+    scale();
+  }
+
+  window.addEventListener('resize', scale);
+
+  // ── Fullscreen ──
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  // ── Keyboard shortcuts ──
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+    if (e.key === 'Escape' && !document.fullscreenElement) ejectDeck();
+  });
+
+  // ── Auto-hide controls when idle in fullscreen ──
+  var hideTimer;
+  document.addEventListener('mousemove', function() {
+    document.getElementById('controls').style.opacity = '1';
+    document.getElementById('controls').style.pointerEvents = 'auto';
+    clearTimeout(hideTimer);
+    if (document.fullscreenElement) {
+      hideTimer = setTimeout(function() {
+        document.getElementById('controls').style.opacity = '0';
+        document.getElementById('controls').style.pointerEvents = 'none';
+      }, 2500);
+    }
+  });
+</script>
+
+</body>
+</html>
