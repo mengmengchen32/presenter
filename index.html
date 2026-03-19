@@ -33,13 +33,15 @@
 
     /* ── HERO ── */
     #hero {
-      min-height: 100vh;
+      height: 100vh;
+      min-height: 500px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 60px 24px;
+      padding: 40px 24px;
       position: relative;
+      gap: 0;
     }
 
     .wordmark {
@@ -49,17 +51,17 @@
       text-transform: uppercase;
       letter-spacing: 0.2em;
       color: var(--amber);
-      margin-bottom: 56px;
+      margin-bottom: clamp(24px, 4vh, 48px);
     }
 
     .headline {
-      font-size: clamp(36px, 6vw, 72px);
+      font-size: clamp(28px, 5vw, 60px);
       font-weight: 300;
       letter-spacing: -0.01em;
       line-height: 1.05;
       text-align: center;
       color: var(--white);
-      margin-bottom: 16px;
+      margin-bottom: clamp(8px, 1.5vh, 16px);
     }
 
     .headline strong {
@@ -69,29 +71,28 @@
 
     .subhead {
       font-family: var(--mono);
-      font-size: 12px;
+      font-size: clamp(10px, 1.2vw, 12px);
       color: var(--muted);
       text-align: center;
       letter-spacing: 0.06em;
-      margin-bottom: 64px;
+      margin-bottom: clamp(32px, 5vh, 56px);
       line-height: 1.8;
     }
 
     /* Drop zone */
     #drop-zone {
-      width: 100%;
-      max-width: 420px;
+      width: min(420px, 90vw);
       border: 1px solid rgba(232,160,32,0.3);
       border-radius: 2px;
-      padding: 40px 32px;
+      padding: clamp(24px, 4vh, 40px) 32px;
       text-align: center;
       cursor: pointer;
       position: relative;
       transition: border-color 0.2s, background 0.2s;
+      margin-bottom: clamp(16px, 2.5vh, 28px);
     }
 
-    #drop-zone::before,
-    #drop-zone::after {
+    #drop-zone::before, #drop-zone::after {
       content: '';
       position: absolute;
       width: 12px;
@@ -102,8 +103,7 @@
     #drop-zone::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
     #drop-zone::after  { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
 
-    #drop-zone:hover,
-    #drop-zone.drag-over {
+    #drop-zone:hover, #drop-zone.drag-over {
       border-color: var(--amber);
       background: var(--amber-faint);
     }
@@ -118,10 +118,10 @@
     }
 
     .drop-arrow {
-      font-size: 24px;
+      font-size: 22px;
       color: var(--amber-dim);
       display: block;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .drop-primary {
@@ -140,37 +140,80 @@
       letter-spacing: 0.04em;
     }
 
+    /* Fullscreen button — prominent in hero */
+    #btn-fullscreen {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: none;
+      border: 1px solid rgba(232,160,32,0.4);
+      border-radius: 2px;
+      padding: 11px 24px;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--amber);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      margin-bottom: clamp(20px, 3vh, 32px);
+      width: min(420px, 90vw);
+      justify-content: center;
+    }
+    #btn-fullscreen:hover {
+      background: var(--amber-faint);
+      border-color: var(--amber);
+    }
+    #btn-fullscreen svg {
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+
     .hero-note {
       font-family: var(--mono);
       font-size: 10px;
-      color: rgba(240,238,232,0.2);
+      color: rgba(240,238,232,0.18);
       letter-spacing: 0.06em;
       text-align: center;
-      margin-top: 28px;
       line-height: 1.8;
     }
 
-    .scroll-link {
+    /* "Why I Built This" anchor — visible, at bottom of hero */
+    .why-link {
       position: absolute;
-      bottom: 36px;
+      bottom: 28px;
       left: 50%;
       transform: translateX(-50%);
-      font-family: var(--mono);
-      font-size: 10px;
-      color: rgba(240,238,232,0.2);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
       text-decoration: none;
-      transition: color 0.2s;
+      transition: opacity 0.2s;
+    }
+    .why-link:hover { opacity: 0.8; }
+
+    .why-link-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--amber);
       white-space: nowrap;
     }
-    .scroll-link:hover { color: var(--amber); }
+
+    .why-link-arrow {
+      width: 1px;
+      height: 32px;
+      background: linear-gradient(to bottom, var(--amber), transparent);
+    }
 
     /* ── MANIFESTO ── */
     #manifesto {
       border-top: 1px solid var(--rule);
-      padding: 100px clamp(24px, 8vw, 160px);
-      max-width: 900px;
+      padding: clamp(60px, 10vw, 120px) clamp(24px, 8vw, 160px);
+      max-width: 860px;
       margin: 0 auto;
     }
 
@@ -181,28 +224,24 @@
       text-transform: uppercase;
       letter-spacing: 0.15em;
       color: var(--amber);
-      margin-bottom: 40px;
+      margin-bottom: 36px;
     }
 
     .manifesto-lede {
-      font-size: clamp(20px, 2.5vw, 28px);
+      font-size: clamp(18px, 2.2vw, 26px);
       font-weight: 300;
       line-height: 1.5;
       color: var(--white);
-      margin-bottom: 56px;
+      margin-bottom: 48px;
       letter-spacing: -0.01em;
     }
 
     .manifesto-block {
-      margin-bottom: 48px;
-      padding-bottom: 48px;
+      margin-bottom: 44px;
+      padding-bottom: 44px;
       border-bottom: 1px solid var(--rule);
     }
-    .manifesto-block:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
+    .manifesto-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
     .manifesto-block-label {
       font-family: var(--mono);
@@ -210,7 +249,7 @@
       text-transform: uppercase;
       letter-spacing: 0.12em;
       color: var(--amber-dim);
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .manifesto-block p {
@@ -218,33 +257,32 @@
       font-weight: 300;
       line-height: 1.8;
       color: rgba(240,238,232,0.6);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     .manifesto-block p:last-child { margin-bottom: 0; }
     .manifesto-block p strong { color: var(--white); font-weight: 500; }
 
     .manifesto-pull {
-      font-size: clamp(18px, 2vw, 24px);
+      font-size: clamp(17px, 2vw, 22px);
       font-weight: 300;
       font-style: italic;
       color: var(--amber);
       line-height: 1.4;
-      padding: 28px 0;
+      padding: 24px 0;
       border-top: 1px solid rgba(232,160,32,0.2);
       border-bottom: 1px solid rgba(232,160,32,0.2);
-      margin: 32px 0;
-      letter-spacing: -0.01em;
+      margin: 28px 0;
     }
 
     /* ── FOOTER ── */
     footer {
       border-top: 1px solid var(--rule);
-      padding: 28px clamp(24px, 6vw, 96px);
+      padding: 24px clamp(24px, 6vw, 96px);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      max-width: 100%;
     }
-
     footer span {
       font-family: var(--mono);
       font-size: 10px;
@@ -263,9 +301,7 @@
       justify-content: center;
     }
     #stage-wrap.active { display: flex; }
-
     #stage { position: relative; }
-
     #deck-frame {
       position: absolute;
       top: 0; left: 0;
@@ -293,11 +329,15 @@
     #controls.visible { display: flex; }
     #controls.fade { opacity: 0; pointer-events: none; }
 
-    .ctrl-divider {
-      width: 1px;
-      height: 16px;
-      background: rgba(232,160,32,0.15);
-      margin: 0 4px;
+    .ctrl-divider { width: 1px; height: 16px; background: rgba(232,160,32,0.15); margin: 0 4px; }
+
+    .ctrl-zoom-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--amber);
+      letter-spacing: 0.06em;
+      min-width: 40px;
+      text-align: center;
     }
 
     .ctrl-btn {
@@ -306,23 +346,18 @@
       border-radius: 2px;
       padding: 4px 10px;
       font-family: var(--mono);
-      font-size: 11px;
-      color: rgba(240,238,232,0.35);
+      font-size: 13px;
+      color: rgba(240,238,232,0.4);
       cursor: pointer;
-      letter-spacing: 0.06em;
+      line-height: 1;
       transition: all 0.15s;
     }
-    .ctrl-btn:hover { color: var(--amber); }
-    .ctrl-btn.active {
-      border-color: rgba(232,160,32,0.35);
-      color: var(--amber);
-      background: rgba(232,160,32,0.08);
-    }
+    .ctrl-btn:hover { color: var(--amber); background: var(--amber-faint); }
 
     .ctrl-icon {
       background: none;
       border: none;
-      padding: 4px 8px;
+      padding: 4px 9px;
       color: rgba(240,238,232,0.35);
       cursor: pointer;
       font-size: 14px;
@@ -332,9 +367,19 @@
     }
     .ctrl-icon:hover { color: var(--amber); }
 
-    @media (max-width: 600px) {
-      .headline { font-size: 32px; }
+    /* Fullscreen icon in controls — larger, amber */
+    #ctrl-fs {
+      background: none;
+      border: 1px solid rgba(232,160,32,0.35);
+      border-radius: 2px;
+      padding: 4px 10px;
+      font-size: 15px;
+      color: var(--amber);
+      cursor: pointer;
+      line-height: 1;
+      transition: all 0.15s;
     }
+    #ctrl-fs:hover { background: var(--amber-faint); }
   </style>
 </head>
 <body>
@@ -344,7 +389,7 @@
   <p class="wordmark">Presenter</p>
 
   <h1 class="headline">Stop making slides<br><strong>by hand.</strong></h1>
-  <p class="subhead">Drop any HTML file. Lock your aspect ratio. Go fullscreen.<br>Your file stays on your machine.</p>
+  <p class="subhead">Drop any HTML file. Zoom to fit. Go fullscreen.</p>
 
   <div id="drop-zone">
     <input type="file" accept=".html,.htm" onchange="loadFile(this.files[0])" />
@@ -353,9 +398,19 @@
     <p class="drop-secondary">or click to browse &middot; .html only</p>
   </div>
 
-  <p class="hero-note">Free &middot; No login &middot; No upload &middot; Works offline</p>
+  <button id="btn-fullscreen" onclick="toggleFullscreen()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M1 5V2h3M15 5V2h-3M1 11v3h3M15 11v3h-3"/>
+    </svg>
+    Enter Fullscreen
+  </button>
 
-  <a href="#manifesto" class="scroll-link">Why I built this &darr;</a>
+  <p class="hero-note">Free &middot; No login &middot; No upload &middot; Your file stays on your machine</p>
+
+  <a href="#manifesto" class="why-link">
+    <span class="why-link-label">Why I built this</span>
+    <span class="why-link-arrow"></span>
+  </a>
 </section>
 
 <!-- ── MANIFESTO ── -->
@@ -373,17 +428,15 @@
   <div class="manifesto-block">
     <p class="manifesto-block-label">Why PowerPoint fails AI</p>
     <p><strong>PowerPoint was built for humans who can't write code.</strong> It is a GUI — a control panel of drag handles and buttons so that we can manipulate layout without touching the underlying logic. When you ask Claude to work in PowerPoint, you are asking it to operate through a human-facing abstraction layer.</p>
-
     <div class="manifesto-pull">AI doesn't need the GUI. It is the coder.</div>
-
     <p>It has to translate: intent → GUI operation → output. Every step in that chain loses fidelity. HTML and CSS skip the middleman entirely. <strong>The code is the output.</strong> Claude already knows my product, my design system, my value prop. I go from brainstorming to a finished deck in minutes — without switching tools or re-explaining anything.</p>
     <p>This is probably a broader pattern. Tools built to simplify things for humans make things harder for AI. The abstraction that helps us becomes friction for them.</p>
   </div>
 
   <div class="manifesto-block">
     <p class="manifesto-block-label">Two problems remained</p>
-    <p>HTML slides don't go fullscreen by default. And on a bigger projector, the aspect ratio gets off and you're fumbling with browser zoom mid-presentation.</p>
-    <p>So I built this. It took a few minutes using Claude Code. Drop in any HTML file, pick your ratio, go fullscreen. That's it.</p>
+    <p>HTML slides don't go fullscreen by default. And on a bigger projector, the zoom level is off and you're fumbling with the browser mid-presentation.</p>
+    <p>So I built this. It took a few minutes using Claude Code. Drop in any HTML file, adjust the zoom, go fullscreen. That's it.</p>
   </div>
 </section>
 
@@ -401,33 +454,31 @@
 
 <!-- ── CONTROLS ── -->
 <div id="controls">
-  <button class="ctrl-btn active" data-ratio="16:9" onclick="setRatio(this)">16:9</button>
-  <button class="ctrl-btn" data-ratio="4:3" onclick="setRatio(this)">4:3</button>
-  <button class="ctrl-btn" data-ratio="16:10" onclick="setRatio(this)">16:10</button>
+  <button class="ctrl-btn" onclick="adjustZoom(-0.05)" title="Zoom out">−</button>
+  <span class="ctrl-zoom-label" id="zoom-label">100%</span>
+  <button class="ctrl-btn" onclick="adjustZoom(0.05)" title="Zoom in">+</button>
+  <button class="ctrl-btn" onclick="resetZoom()" title="Reset zoom" style="font-size:11px;letter-spacing:0.06em;color:rgba(240,238,232,0.25);">fit</button>
   <div class="ctrl-divider"></div>
-  <button class="ctrl-icon" onclick="toggleFullscreen()" title="Fullscreen (F)">⛶</button>
+  <button id="ctrl-fs" onclick="toggleFullscreen()" title="Fullscreen (F)">⛶</button>
   <button class="ctrl-icon" onclick="ejectDeck()" title="Exit (Esc)">✕</button>
 </div>
 
 <script>
-  var RATIOS = { '16:9': [1920,1080], '4:3': [1600,1200], '16:10': [1920,1200] };
-  var currentRatio = '16:9';
-  var hideTimer;
+  var BASE_W = 1920, BASE_H = 1080;
+  var zoomOffset = 0; // added on top of auto-fit scale
 
   var dz = document.getElementById('drop-zone');
   dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('drag-over'); });
   dz.addEventListener('dragleave', function() { dz.classList.remove('drag-over'); });
   dz.addEventListener('drop', function(e) {
-    e.preventDefault();
-    dz.classList.remove('drag-over');
-    var file = e.dataTransfer.files[0];
-    if (file) loadFile(file);
+    e.preventDefault(); dz.classList.remove('drag-over');
+    if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
   });
 
   function loadFile(file) {
     if (!file) return;
-    var url = URL.createObjectURL(file);
-    document.getElementById('deck-frame').src = url;
+    zoomOffset = 0;
+    document.getElementById('deck-frame').src = URL.createObjectURL(file);
     document.getElementById('stage-wrap').classList.add('active');
     document.getElementById('controls').classList.add('visible');
     scale();
@@ -440,24 +491,25 @@
     document.getElementById('controls').classList.remove('visible');
   }
 
-  function scale() {
-    var dims = RATIOS[currentRatio];
-    var s = Math.min(window.innerWidth / dims[0], window.innerHeight / dims[1]);
-    var stage = document.getElementById('stage');
-    stage.style.width  = Math.round(dims[0] * s) + 'px';
-    stage.style.height = Math.round(dims[1] * s) + 'px';
-    var frame = document.getElementById('deck-frame');
-    frame.style.width  = dims[0] + 'px';
-    frame.style.height = dims[1] + 'px';
-    frame.style.transform = 'scale(' + s + ')';
+  function autoFitScale() {
+    return Math.min(window.innerWidth / BASE_W, window.innerHeight / BASE_H);
   }
 
-  function setRatio(btn) {
-    document.querySelectorAll('.ctrl-btn[data-ratio]').forEach(function(b) { b.classList.remove('active'); });
-    btn.classList.add('active');
-    currentRatio = btn.dataset.ratio;
-    scale();
+  function scale() {
+    var s = Math.max(0.1, autoFitScale() + zoomOffset);
+    var sw = Math.round(BASE_W * s), sh = Math.round(BASE_H * s);
+    var stage = document.getElementById('stage');
+    stage.style.width  = sw + 'px';
+    stage.style.height = sh + 'px';
+    var frame = document.getElementById('deck-frame');
+    frame.style.width  = BASE_W + 'px';
+    frame.style.height = BASE_H + 'px';
+    frame.style.transform = 'scale(' + s + ')';
+    document.getElementById('zoom-label').textContent = Math.round(s * 100) + '%';
   }
+
+  function adjustZoom(delta) { zoomOffset += delta; scale(); }
+  function resetZoom() { zoomOffset = 0; scale(); }
 
   window.addEventListener('resize', scale);
 
@@ -468,9 +520,13 @@
 
   document.addEventListener('keydown', function(e) {
     if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+    if (e.key === '=' || e.key === '+') adjustZoom(0.05);
+    if (e.key === '-') adjustZoom(-0.05);
+    if (e.key === '0') resetZoom();
     if (e.key === 'Escape' && !document.fullscreenElement) ejectDeck();
   });
 
+  var hideTimer;
   document.addEventListener('mousemove', function() {
     var ctrl = document.getElementById('controls');
     ctrl.classList.remove('fade');
