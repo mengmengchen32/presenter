@@ -140,37 +140,7 @@
       letter-spacing: 0.04em;
     }
 
-    /* Fullscreen button — prominent in hero */
-    #btn-fullscreen {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: none;
-      border: 1px solid rgba(232,160,32,0.4);
-      border-radius: 2px;
-      padding: 11px 24px;
-      font-family: var(--font);
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--amber);
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
-      margin-bottom: clamp(20px, 3vh, 32px);
-      width: min(420px, 90vw);
-      justify-content: center;
-    }
-    #btn-fullscreen:hover {
-      background: var(--amber-faint);
-      border-color: var(--amber);
-    }
-    #btn-fullscreen svg {
-      opacity: 0.7;
-      flex-shrink: 0;
-    }
-
-    .hero-note {
+.hero-note {
       font-family: var(--mono);
       font-size: 10px;
       color: rgba(240,238,232,0.18);
@@ -397,13 +367,6 @@
     <p class="drop-primary">Drop your HTML deck here</p>
     <p class="drop-secondary">or click to browse &middot; .html only</p>
   </div>
-
-  <button id="btn-fullscreen" onclick="toggleFullscreen()">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-      <path d="M1 5V2h3M15 5V2h-3M1 11v3h3M15 11v3h-3"/>
-    </svg>
-    Enter Fullscreen
-  </button>
 
   <p class="hero-note">Free &middot; No login &middot; No upload &middot; Your file stays on your machine</p>
 
