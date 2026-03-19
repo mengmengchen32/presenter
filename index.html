@@ -267,16 +267,13 @@
       inset: 0;
       background: #000;
       z-index: 1000;
-      align-items: center;
-      justify-content: center;
     }
-    #stage-wrap.active { display: flex; }
-    #stage { position: relative; }
+    #stage-wrap.active { display: block; }
     #deck-frame {
-      position: absolute;
-      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
       border: none;
-      transform-origin: top left;
+      display: block;
     }
 
     /* ── CONTROLS ── */
@@ -410,9 +407,7 @@
 
 <!-- ── STAGE ── -->
 <div id="stage-wrap">
-  <div id="stage">
-    <iframe id="deck-frame" scrolling="no" allowfullscreen></iframe>
-  </div>
+  <iframe id="deck-frame" scrolling="no" allowfullscreen></iframe>
 </div>
 
 <!-- ── CONTROLS ── -->
@@ -427,8 +422,7 @@
 </div>
 
 <script>
-  var BASE_W = 1920, BASE_H = 1080;
-  var zoomOffset = 0; // added on top of auto-fit scale
+  var currentZoom = 1.0;
 
   var dz = document.getElementById('drop-zone');
   dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('drag-over'); });
@@ -440,11 +434,13 @@
 
   function loadFile(file) {
     if (!file) return;
-    zoomOffset = 0;
-    document.getElementById('deck-frame').src = URL.createObjectURL(file);
+    currentZoom = 1.0;
+    var frame = document.getElementById('deck-frame');
+    frame.src = URL.createObjectURL(file);
+    frame.style.zoom = currentZoom;
     document.getElementById('stage-wrap').classList.add('active');
     document.getElementById('controls').classList.add('visible');
-    scale();
+    updateLabel();
   }
 
   function ejectDeck() {
@@ -454,27 +450,21 @@
     document.getElementById('controls').classList.remove('visible');
   }
 
-  function autoFitScale() {
-    return Math.min(window.innerWidth / BASE_W, window.innerHeight / BASE_H);
+  function adjustZoom(delta) {
+    currentZoom = Math.max(0.25, Math.min(4, Math.round((currentZoom + delta) * 20) / 20));
+    document.getElementById('deck-frame').style.zoom = currentZoom;
+    updateLabel();
   }
 
-  function scale() {
-    var s = Math.max(0.1, autoFitScale() + zoomOffset);
-    var sw = Math.round(BASE_W * s), sh = Math.round(BASE_H * s);
-    var stage = document.getElementById('stage');
-    stage.style.width  = sw + 'px';
-    stage.style.height = sh + 'px';
-    var frame = document.getElementById('deck-frame');
-    frame.style.width  = BASE_W + 'px';
-    frame.style.height = BASE_H + 'px';
-    frame.style.transform = 'scale(' + s + ')';
-    document.getElementById('zoom-label').textContent = Math.round(s * 100) + '%';
+  function resetZoom() {
+    currentZoom = 1.0;
+    document.getElementById('deck-frame').style.zoom = currentZoom;
+    updateLabel();
   }
 
-  function adjustZoom(delta) { zoomOffset += delta; scale(); }
-  function resetZoom() { zoomOffset = 0; scale(); }
-
-  window.addEventListener('resize', scale);
+  function updateLabel() {
+    document.getElementById('zoom-label').textContent = Math.round(currentZoom * 100) + '%';
+  }
 
   function toggleFullscreen() {
     if (!document.fullscreenElement) document.documentElement.requestFullscreen();
@@ -483,9 +473,9 @@
 
   document.addEventListener('keydown', function(e) {
     if (e.key === 'f' || e.key === 'F') toggleFullscreen();
-    if (e.key === '=' || e.key === '+') adjustZoom(0.05);
-    if (e.key === '-') adjustZoom(-0.05);
-    if (e.key === '0') resetZoom();
+    if ((e.key === '=' || e.key === '+') && !e.metaKey && !e.ctrlKey) adjustZoom(0.1);
+    if (e.key === '-' && !e.metaKey && !e.ctrlKey) adjustZoom(-0.1);
+    if (e.key === '0' && !e.metaKey && !e.ctrlKey) resetZoom();
     if (e.key === 'Escape' && !document.fullscreenElement) ejectDeck();
   });
 
